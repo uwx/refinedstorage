@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedstorage.integration.projecte;
 import com.raoulvdberge.refinedstorage.api.storage.AccessType;
 import com.raoulvdberge.refinedstorage.apiimpl.network.node.externalstorage.NetworkNodeExternalStorage;
 import com.raoulvdberge.refinedstorage.apiimpl.network.node.externalstorage.StorageItemExternal;
+import com.raoulvdberge.refinedstorage.tile.config.IFilterable;
 import moze_intel.projecte.api.ProjectEAPI;
 import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,8 +66,12 @@ public class StorageItemTransmutationTable extends StorageItemExternal {
                     return actualStack;
                 }
 
+                //ItemStack retval = actualStack;
                 if (!simulate) {
-                    provider.setEmc(provider.getEmc() + emc);
+                    if (IFilterable.canTake(externalStorage.getItemFilters(), externalStorage.getMode(), externalStorage.getCompare(), stack)) { // shouldn't need to copy for the `stack` bit here
+                        provider.setEmc(provider.getEmc() + emc);
+                        actualStack = null; // we deleted the item
+                    }
 
                     handleKnowledge(provider, stack.copy());
 
@@ -77,7 +82,7 @@ public class StorageItemTransmutationTable extends StorageItemExternal {
                     }
                 }
 
-                return null;
+                return actualStack;
             }
         }
 
