@@ -8,8 +8,13 @@ import java.util.Collection;
 import java.util.Comparator;
 
 public interface IStorage<T> {
-    Comparator<IStorage> COMPARATOR = (left, right) -> {
-        int compare = Integer.compare(right.getPriority(), left.getPriority());
+    Comparator<IStorage> COMPARATOR_INSERT = (left, right) -> {
+        int compare = Integer.compare(right.getInsertPriority(), left.getInsertPriority());
+
+        return compare != 0 ? compare : Integer.compare(right.getStored(), left.getStored());
+    };
+    Comparator<IStorage> COMPARATOR_EXTRACT = (left, right) -> {
+        int compare = Integer.compare(right.getExtractPriority(), left.getExtractPriority());
 
         return compare != 0 ? compare : Integer.compare(right.getStored(), left.getStored());
     };
@@ -50,9 +55,14 @@ public interface IStorage<T> {
     int getStored();
 
     /**
-     * @return the priority of this storage
+     * @return the priority of this storage for inserting items into the network
      */
-    int getPriority();
+    int getInsertPriority();
+
+    /**
+     * @return the priority of this storage for extracting items from the network
+     */
+    int getExtractPriority();
 
     /**
      * @return the access type of this storage

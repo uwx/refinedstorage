@@ -18,7 +18,8 @@ public class StorageCacheItem implements IStorageCache<ItemStack> {
     public static final Consumer<INetwork> INVALIDATE = network -> network.getItemStorageCache().invalidate();
 
     private INetwork network;
-    private CopyOnWriteArrayList<IStorage<ItemStack>> storages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<IStorage<ItemStack>> storagesInsert = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<IStorage<ItemStack>> storagesExtract = new CopyOnWriteArrayList<>();
     private IStackList<ItemStack> list = API.instance().createItemStackList();
     private List<IStorageCacheListener<ItemStack>> listeners = new LinkedList<>();
     private List<Pair<ItemStack, Integer>> batchedChanges = new ArrayList<>();
@@ -29,17 +30,19 @@ public class StorageCacheItem implements IStorageCache<ItemStack> {
 
     @Override
     public synchronized void invalidate() {
-        storages.clear();
+        storagesInsert.clear();
+        storagesExtract.clear();
 
+        // TODO is sort actually called after invalidate? i hope so x)
         network.getNodeGraph().all().stream()
             .filter(node -> node.canUpdate() && node instanceof IStorageProvider)
-            .forEach(node -> ((IStorageProvider) node).addItemStorages(storages));
+            .forEach(node -> ((IStorageProvider) node).addItemStorages(storagesInsert, storagesExtract));
 
         list.clear();
 
         sort();
 
-        for (IStorage<ItemStack> storage : storages) {
+        for (IStorage<ItemStack> storage : storagesExtract) {
             if (storage.getAccessType() == AccessType.INSERT) {
                 continue;
             }
@@ -100,7 +103,8 @@ public class StorageCacheItem implements IStorageCache<ItemStack> {
 
     @Override
     public void sort() {
-        storages.sort(IStorage.COMPARATOR);
+        storagesInsert.sort(IStorage.COMPARATOR_INSERT);
+        storagesExtract.sort(IStorage.COMPARATOR_EXTRACT);
     }
 
     @Override
@@ -109,7 +113,12 @@ public class StorageCacheItem implements IStorageCache<ItemStack> {
     }
 
     @Override
-    public List<IStorage<ItemStack>> getStorages() {
-        return storages;
+    public List<IStorage<ItemStack>> getStoragesInsert() {
+        return storagesInsert;
+    }
+
+    @Override
+    public List<IStorage<ItemStack>> getStoragesExtract() {
+        return storagesExtract;
     }
 }

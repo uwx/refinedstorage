@@ -101,8 +101,13 @@ public class StorageItemDiskManipulator implements IStorageDisk<ItemStack> {
     }
 
     @Override
-    public int getPriority() {
-        return parent.getPriority();
+    public int getInsertPriority() {
+        return parent.getInsertPriority();
+    }
+
+    @Override
+    public int getExtractPriority() {
+        return parent.getExtractPriority();
     }
 
     @Override

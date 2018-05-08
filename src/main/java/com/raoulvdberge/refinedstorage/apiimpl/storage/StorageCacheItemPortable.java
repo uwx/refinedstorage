@@ -77,7 +77,12 @@ public class StorageCacheItemPortable implements IStorageCache<ItemStack> {
     }
 
     @Override
-    public List<IStorage<ItemStack>> getStorages() {
+    public List<IStorage<ItemStack>> getStoragesInsert() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<IStorage<ItemStack>> getStoragesExtract() {
         return Collections.emptyList();
     }
 }

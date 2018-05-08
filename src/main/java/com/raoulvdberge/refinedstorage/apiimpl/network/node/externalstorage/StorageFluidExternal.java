@@ -86,8 +86,13 @@ public class StorageFluidExternal implements IStorage<FluidStack> {
     }
 
     @Override
-    public int getPriority() {
-        return externalStorage.getPriority();
+    public int getInsertPriority() {
+        return externalStorage.getInsertPriority();
+    }
+
+    @Override
+    public int getExtractPriority() {
+        return externalStorage.getExtractPriority();
     }
 
     public AccessType getAccessType() {

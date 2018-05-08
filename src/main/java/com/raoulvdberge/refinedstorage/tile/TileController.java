@@ -279,7 +279,7 @@ public class TileController extends TileBase implements ITickable, INetwork, IRe
 
     @Override
     public ItemStack insertItem(@Nonnull ItemStack stack, int size, boolean simulate) {
-        if (stack.isEmpty() || itemStorage.getStorages().isEmpty()) {
+        if (stack.isEmpty() || itemStorage.getStoragesInsert().isEmpty()) {
             return ItemHandlerHelper.copyStackWithSize(stack, size);
         }
 
@@ -288,7 +288,7 @@ public class TileController extends TileBase implements ITickable, INetwork, IRe
         int inserted = 0;
         int insertedExternally = 0;
 
-        for (IStorage<ItemStack> storage : this.itemStorage.getStorages()) {
+        for (IStorage<ItemStack> storage : this.itemStorage.getStoragesInsert()) {
             if (storage.getAccessType() == AccessType.EXTRACT) {
                 continue;
             }
@@ -338,7 +338,7 @@ public class TileController extends TileBase implements ITickable, INetwork, IRe
 
         ItemStack newStack = null;
 
-        for (IStorage<ItemStack> storage : this.itemStorage.getStorages()) {
+        for (IStorage<ItemStack> storage : this.itemStorage.getStoragesExtract()) {
             ItemStack took = null;
 
             if (filter.test(storage) && storage.getAccessType() != AccessType.INSERT) {
@@ -377,7 +377,7 @@ public class TileController extends TileBase implements ITickable, INetwork, IRe
     @Nullable
     @Override
     public FluidStack insertFluid(@Nonnull FluidStack stack, int size, boolean simulate) {
-        if (fluidStorage.getStorages().isEmpty()) {
+        if (fluidStorage.getStoragesInsert().isEmpty()) {
             return StackUtils.copy(stack, size);
         }
 
@@ -385,7 +385,7 @@ public class TileController extends TileBase implements ITickable, INetwork, IRe
 
         int inserted = 0;
 
-        for (IStorage<FluidStack> storage : this.fluidStorage.getStorages()) {
+        for (IStorage<FluidStack> storage : this.fluidStorage.getStoragesInsert()) {
             if (storage.getAccessType() == AccessType.EXTRACT) {
                 continue;
             }
@@ -424,7 +424,7 @@ public class TileController extends TileBase implements ITickable, INetwork, IRe
 
         FluidStack newStack = null;
 
-        for (IStorage<FluidStack> storage : this.fluidStorage.getStorages()) {
+        for (IStorage<FluidStack> storage : this.fluidStorage.getStoragesExtract()) {
             FluidStack took = null;
 
             if (storage.getAccessType() != AccessType.INSERT) {

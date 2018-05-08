@@ -79,7 +79,12 @@ public interface IStorageCache<T> {
     IStackList<T> getList();
 
     /**
-     * @return the storages connected to this network
+     * @return the storages connected to this network sorted by insert prioritty
      */
-    List<IStorage<T>> getStorages();
+    List<IStorage<T>> getStoragesInsert();
+
+    /**
+     * @return the storages connected to this network sorted by extract priority
+     */
+    List<IStorage<T>> getStoragesExtract();
 }

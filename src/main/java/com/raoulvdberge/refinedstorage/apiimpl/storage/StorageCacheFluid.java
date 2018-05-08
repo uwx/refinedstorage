@@ -16,7 +16,8 @@ public class StorageCacheFluid implements IStorageCache<FluidStack> {
     public static final Consumer<INetwork> INVALIDATE = n -> n.getFluidStorageCache().invalidate();
 
     private INetwork network;
-    private CopyOnWriteArrayList<IStorage<FluidStack>> storages = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<IStorage<FluidStack>> storagesInsert = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<IStorage<FluidStack>> storagesExtract = new CopyOnWriteArrayList<>();
     private IStackList<FluidStack> list = API.instance().createFluidStackList();
     private List<IStorageCacheListener<FluidStack>> listeners = new LinkedList<>();
 
@@ -26,17 +27,18 @@ public class StorageCacheFluid implements IStorageCache<FluidStack> {
 
     @Override
     public synchronized void invalidate() {
-        storages.clear();
+        storagesInsert.clear();
+        storagesExtract.clear();
 
         network.getNodeGraph().all().stream()
             .filter(node -> node.canUpdate() && node instanceof IStorageProvider)
-            .forEach(node -> ((IStorageProvider) node).addFluidStorages(storages));
+            .forEach(node -> ((IStorageProvider) node).addFluidStorages(storagesInsert, storagesExtract));
 
         list.clear();
 
         sort();
 
-        for (IStorage<FluidStack> storage : storages) {
+        for (IStorage<FluidStack> storage : storagesExtract) {
             if (storage.getAccessType() == AccessType.INSERT) {
                 continue;
             }
@@ -84,7 +86,8 @@ public class StorageCacheFluid implements IStorageCache<FluidStack> {
 
     @Override
     public void sort() {
-        storages.sort(IStorage.COMPARATOR);
+        storagesInsert.sort(IStorage.COMPARATOR_INSERT);
+        storagesExtract.sort(IStorage.COMPARATOR_EXTRACT);
     }
 
     @Override
@@ -93,7 +96,12 @@ public class StorageCacheFluid implements IStorageCache<FluidStack> {
     }
 
     @Override
-    public List<IStorage<FluidStack>> getStorages() {
-        return storages;
+    public List<IStorage<FluidStack>> getStoragesInsert() {
+        return storagesInsert;
+    }
+
+    @Override
+    public List<IStorage<FluidStack>> getStoragesExtract() {
+        return storagesExtract;
     }
 }

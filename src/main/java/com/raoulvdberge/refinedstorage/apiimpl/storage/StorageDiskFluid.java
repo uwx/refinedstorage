@@ -186,7 +186,12 @@ public class StorageDiskFluid implements IStorageDisk<FluidStack> {
     }
 
     @Override
-    public int getPriority() {
+    public int getInsertPriority() {
+        return 0;
+    }
+
+    @Override
+    public int getExtractPriority() {
         return 0;
     }
 

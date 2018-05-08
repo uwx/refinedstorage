@@ -6,11 +6,21 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.tileentity.TileEntity;
 
 public interface IPrioritizable {
-    static <T extends TileEntity & INetworkNodeProxy> TileDataParameter<Integer, T> createParameter() {
-        return new TileDataParameter<>(DataSerializers.VARINT, 0, t -> ((IPrioritizable) t.getNode()).getPriority(), (t, v) -> ((IPrioritizable) t.getNode()).setPriority(v));
+    static <T extends TileEntity & INetworkNodeProxy> TileDataParameter<Integer, T> createParameterInsert() {
+        return new TileDataParameter<>(DataSerializers.VARINT, 0, t ->
+                ((IPrioritizable) t.getNode()).getInsertPriority(), (t, v) -> ((IPrioritizable) t.getNode()).setInsertPriority(v));
     }
 
-    int getPriority();
+    static <T extends TileEntity & INetworkNodeProxy> TileDataParameter<Integer, T> createParameterExtract() {
+        return new TileDataParameter<>(DataSerializers.VARINT, 0, t ->
+                ((IPrioritizable) t.getNode()).getExtractPriority(), (t, v) -> ((IPrioritizable) t.getNode()).setExtractPriority(v));
+    }
 
-    void setPriority(int priority);
+    int getInsertPriority();
+
+    void setInsertPriority(int priority);
+
+    int getExtractPriority();
+
+    void setExtractPriority(int priority);
 }

@@ -11,7 +11,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public class TileStorage extends TileNode<NetworkNodeStorage> {
-    public static final TileDataParameter<Integer, TileStorage> PRIORITY = IPrioritizable.createParameter();
+    public static final TileDataParameter<Integer, TileStorage> PRIORITY_INSERT = IPrioritizable.createParameterInsert();
+    public static final TileDataParameter<Integer, TileStorage> PRIORITY_EXTRACT = IPrioritizable.createParameterExtract();
     public static final TileDataParameter<Integer, TileStorage> COMPARE = IComparable.createParameter();
     public static final TileDataParameter<Integer, TileStorage> MODE = IFilterable.createParameter();
     public static final TileDataParameter<AccessType, TileStorage> ACCESS_TYPE = IAccessType.createParameter();
@@ -19,7 +20,8 @@ public class TileStorage extends TileNode<NetworkNodeStorage> {
     public static final TileDataParameter<Boolean, TileStorage> VOID_EXCESS = IExcessVoidable.createParameter();
 
     public TileStorage() {
-        dataManager.addWatchedParameter(PRIORITY);
+        dataManager.addWatchedParameter(PRIORITY_INSERT);
+        dataManager.addWatchedParameter(PRIORITY_EXTRACT);
         dataManager.addWatchedParameter(COMPARE);
         dataManager.addWatchedParameter(MODE);
         dataManager.addWatchedParameter(STORED);

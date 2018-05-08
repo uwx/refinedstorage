@@ -9,9 +9,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.util.Tuple;
 
 public class GuiPriority extends GuiCraftingStart {
-    private TileDataParameter<Integer, ?> priority;
+    private TileDataParameter<Integer, ?> priorityInsert;
+    private TileDataParameter<Integer, ?> priorityExtract;
 
-    public GuiPriority(GuiBase parent, TileDataParameter<Integer, ?> priority) {
+    public GuiPriority(GuiBase parent, TileDataParameter<Integer, ?> priorityInsert, TileDataParameter<Integer, ?> priorityExtract) {
         super(parent, null, new Container() {
             @Override
             public boolean canInteractWith(EntityPlayer player) {
@@ -19,12 +20,27 @@ public class GuiPriority extends GuiCraftingStart {
             }
         }, 164, 92);
 
-        this.priority = priority;
+        this.priorityInsert = priorityInsert;
+        this.priorityExtract = priorityExtract;
+    }
+
+    @Override
+    public void init(int x, int y) {
+        super.init(x, y);
+        amountField.setText(getInsertAmount() + "," + getExtractAmount());
+    }
+
+    private int getInsertAmount() {
+        return priorityInsert.getValue();
+    }
+
+    private int getExtractAmount() {
+        return priorityExtract.getValue();
     }
 
     @Override
     protected int getAmount() {
-        return priority.getValue();
+        return 0;
     }
 
     @Override
@@ -72,11 +88,17 @@ public class GuiPriority extends GuiCraftingStart {
 
     @Override
     protected void startRequest(boolean noPreview) {
-        Integer amount = Ints.tryParse(amountField.getText());
+        String[] split = amountField.getText().split(",");
+        Integer amountInsert = Ints.tryParse(split.length < 1 ? "" : split[0]);
+        Integer amountExtract = Ints.tryParse(split.length < 2 ? "" : split[1]);
 
-        if (amount != null) {
-            TileDataManager.setParameter(priority, amount);
-
+        if (amountInsert != null) {
+            TileDataManager.setParameter(priorityInsert, amountInsert);
+        }
+        if (amountExtract != null) {
+            TileDataManager.setParameter(priorityExtract, amountExtract);
+        }
+        if (amountExtract != null || amountInsert != null) {
             close();
         }
     }

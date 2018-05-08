@@ -114,7 +114,7 @@ public class GuiStorage extends GuiBase {
         super.actionPerformed(button);
 
         if (button == priorityButton) {
-            FMLCommonHandler.instance().showGuiScreen(new GuiPriority(this, gui.getPriorityParameter()));
+            FMLCommonHandler.instance().showGuiScreen(new GuiPriority(this, gui.getInsertPriorityParameter(), gui.getExtractPriorityParameter()));
         }
     }
 }

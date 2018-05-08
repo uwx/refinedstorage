@@ -11,7 +11,8 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public class TileFluidStorage extends TileNode<NetworkNodeFluidStorage> {
-    public static final TileDataParameter<Integer, TileFluidStorage> PRIORITY = IPrioritizable.createParameter();
+    public static final TileDataParameter<Integer, TileFluidStorage> PRIORITY_INSERT = IPrioritizable.createParameterInsert();
+    public static final TileDataParameter<Integer, TileFluidStorage> PRIORITY_EXTRACT = IPrioritizable.createParameterExtract();
     public static final TileDataParameter<Integer, TileFluidStorage> COMPARE = IComparable.createParameter();
     public static final TileDataParameter<Boolean, TileFluidStorage> VOID_EXCESS = IExcessVoidable.createParameter();
     public static final TileDataParameter<Integer, TileFluidStorage> MODE = IFilterable.createParameter();
@@ -19,7 +20,8 @@ public class TileFluidStorage extends TileNode<NetworkNodeFluidStorage> {
     public static final TileDataParameter<Integer, TileFluidStorage> STORED = new TileDataParameter<>(DataSerializers.VARINT, 0, t -> t.getNode().getStorage().getStored());
 
     public TileFluidStorage() {
-        dataManager.addWatchedParameter(PRIORITY);
+        dataManager.addWatchedParameter(PRIORITY_INSERT);
+        dataManager.addWatchedParameter(PRIORITY_EXTRACT);
         dataManager.addWatchedParameter(COMPARE);
         dataManager.addWatchedParameter(MODE);
         dataManager.addWatchedParameter(STORED);

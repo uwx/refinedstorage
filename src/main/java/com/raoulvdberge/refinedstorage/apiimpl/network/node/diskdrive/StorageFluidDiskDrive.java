@@ -42,8 +42,13 @@ public class StorageFluidDiskDrive implements IStorageDisk<FluidStack> {
     }
 
     @Override
-    public int getPriority() {
-        return diskDrive.getPriority();
+    public int getInsertPriority() {
+        return diskDrive.getInsertPriority();
+    }
+
+    @Override
+    public int getExtractPriority() {
+        return diskDrive.getExtractPriority();
     }
 
     @Override

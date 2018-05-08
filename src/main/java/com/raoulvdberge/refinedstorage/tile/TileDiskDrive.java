@@ -17,7 +17,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileDiskDrive extends TileNode<NetworkNodeDiskDrive> {
-    public static final TileDataParameter<Integer, TileDiskDrive> PRIORITY = IPrioritizable.createParameter();
+    public static final TileDataParameter<Integer, TileDiskDrive> PRIORITY_INSERT = IPrioritizable.createParameterInsert();
+    public static final TileDataParameter<Integer, TileDiskDrive> PRIORITY_EXTRACT = IPrioritizable.createParameterExtract();
     public static final TileDataParameter<Integer, TileDiskDrive> COMPARE = IComparable.createParameter();
     public static final TileDataParameter<Integer, TileDiskDrive> MODE = IFilterable.createParameter();
     public static final TileDataParameter<Integer, TileDiskDrive> TYPE = IType.createParameter();
@@ -77,7 +78,8 @@ public class TileDiskDrive extends TileNode<NetworkNodeDiskDrive> {
     private Integer[] diskState = new Integer[8];
 
     public TileDiskDrive() {
-        dataManager.addWatchedParameter(PRIORITY);
+        dataManager.addWatchedParameter(PRIORITY_INSERT);
+        dataManager.addWatchedParameter(PRIORITY_EXTRACT);
         dataManager.addWatchedParameter(COMPARE);
         dataManager.addWatchedParameter(MODE);
         dataManager.addWatchedParameter(TYPE);

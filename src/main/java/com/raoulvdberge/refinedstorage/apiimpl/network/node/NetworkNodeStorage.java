@@ -43,8 +43,13 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
         }
 
         @Override
-        public int getPriority() {
-            return priority;
+        public int getInsertPriority() {
+            return insertPriority;
+        }
+
+        @Override
+        public int getExtractPriority() {
+            return extractPriority;
         }
 
         @Override
@@ -59,7 +64,8 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
 
     public static final String NBT_STORAGE = "Storage";
 
-    private static final String NBT_PRIORITY = "Priority";
+    private static final String NBT_INSERT_PRIORITY = "PriorityInsert";
+    private static final String NBT_EXTRACT_PRIORITY = "PriorityExtract";
     private static final String NBT_COMPARE = "Compare";
     private static final String NBT_MODE = "Mode";
     private static final String NBT_VOID_EXCESS = "VoidExcess";
@@ -72,7 +78,8 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
     private ItemStorageType type;
 
     private AccessType accessType = AccessType.INSERT_EXTRACT;
-    private int priority = 0;
+    private int insertPriority = 0;
+    private int extractPriority = 0;
     private int compare = IComparer.COMPARE_NBT | IComparer.COMPARE_DAMAGE;
     private int mode = IFilterable.WHITELIST;
     private boolean voidExcess = false;
@@ -119,12 +126,13 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
     }
 
     @Override
-    public void addItemStorages(List<IStorage<ItemStack>> storages) {
-        storages.add(storage);
+    public void addItemStorages(List<IStorage<ItemStack>> storagesInsert, List<IStorage<ItemStack>> storagesExtract) {
+        storagesInsert.add(storage);
+        storagesExtract.add(storage);
     }
 
     @Override
-    public void addFluidStorages(List<IStorage<FluidStack>> storages) {
+    public void addFluidStorages(List<IStorage<FluidStack>> storagesInsert, List<IStorage<FluidStack>> storagesExtract) {
         // NO OP
     }
 
@@ -159,7 +167,8 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
 
         StackUtils.writeItems(filters, 0, tag);
 
-        tag.setInteger(NBT_PRIORITY, priority);
+        tag.setInteger(NBT_INSERT_PRIORITY, insertPriority);
+        tag.setInteger(NBT_EXTRACT_PRIORITY, extractPriority);
         tag.setInteger(NBT_COMPARE, compare);
         tag.setInteger(NBT_MODE, mode);
         tag.setBoolean(NBT_VOID_EXCESS, voidExcess);
@@ -175,8 +184,12 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
 
         StackUtils.readItems(filters, 0, tag);
 
-        if (tag.hasKey(NBT_PRIORITY)) {
-            priority = tag.getInteger(NBT_PRIORITY);
+        if (tag.hasKey(NBT_INSERT_PRIORITY)) {
+            insertPriority = tag.getInteger(NBT_INSERT_PRIORITY);
+        }
+
+        if (tag.hasKey(NBT_EXTRACT_PRIORITY)) {
+            extractPriority = tag.getInteger(NBT_EXTRACT_PRIORITY);
         }
 
         if (tag.hasKey(NBT_COMPARE)) {
@@ -272,8 +285,13 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
     }
 
     @Override
-    public TileDataParameter<Integer, ?> getPriorityParameter() {
-        return TileStorage.PRIORITY;
+    public TileDataParameter<Integer, ?> getInsertPriorityParameter() {
+        return TileStorage.PRIORITY_INSERT;
+    }
+
+    @Override
+    public TileDataParameter<Integer, ?> getExtractPriorityParameter() {
+        return TileStorage.PRIORITY_EXTRACT;
     }
 
     @Override
@@ -318,14 +336,28 @@ public class NetworkNodeStorage extends NetworkNode implements IGuiStorage, ISto
     }
 
     @Override
-    public int getPriority() {
-        return priority;
+    public int getInsertPriority() {
+        return insertPriority;
     }
 
     @Override
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setInsertPriority(int priority) {
+        this.insertPriority = priority;
+        recalc();
+    }
 
+    @Override
+    public int getExtractPriority() {
+        return extractPriority;
+    }
+
+    @Override
+    public void setExtractPriority(int priority) {
+        this.extractPriority = priority;
+        recalc();
+    }
+
+    private void recalc() {
         markDirty();
 
         if (network != null) {

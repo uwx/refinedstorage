@@ -10,12 +10,14 @@ import java.util.List;
  */
 public interface IStorageProvider {
     /**
-     * @param storages the item storages
+     * @param storagesInsert the item storages sorted by insert priority
+     * @param storagesExtract the item storages sorted by extract priority
      */
-    void addItemStorages(List<IStorage<ItemStack>> storages);
+    void addItemStorages(List<IStorage<ItemStack>> storagesInsert, List<IStorage<ItemStack>> storagesExtract);
 
     /**
-     * @param storages the fluid storages
+     * @param storagesInsert the fluid storages sorted by insert priority
+     * @param storagesExtract the fluid storages sorted by extract priority
      */
-    void addFluidStorages(List<IStorage<FluidStack>> storages);
+    void addFluidStorages(List<IStorage<FluidStack>> storagesInsert, List<IStorage<FluidStack>> storagesExtract);
 }

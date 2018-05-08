@@ -14,7 +14,9 @@ public interface IGuiStorage {
 
     TileDataParameter<Integer, ?> getFilterParameter();
 
-    TileDataParameter<Integer, ?> getPriorityParameter();
+    TileDataParameter<Integer, ?> getInsertPriorityParameter();
+
+    TileDataParameter<Integer, ?> getExtractPriorityParameter();
 
     TileDataParameter<AccessType, ?> getAccessTypeParameter();
 

@@ -34,7 +34,8 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
 
     public static final String ID = "disk_drive";
 
-    private static final String NBT_PRIORITY = "Priority";
+    private static final String NBT_INSERT_PRIORITY = "PriorityInsert";
+    private static final String NBT_EXTRACT_PRIORITY = "PriorityExtract";
     private static final String NBT_COMPARE = "Compare";
     private static final String NBT_MODE = "Mode";
     private static final String NBT_TYPE = "Type";
@@ -85,7 +86,8 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
     private IStorageDisk[] fluidStorages = new IStorageDisk[8];
 
     private AccessType accessType = AccessType.INSERT_EXTRACT;
-    private int priority = 0;
+    private int insertPriority = 0;
+    private int extractPriority = 0;
     private int compare = IComparer.COMPARE_NBT | IComparer.COMPARE_DAMAGE;
     private int mode = IFilterable.WHITELIST;
     private int type = IType.ITEMS;
@@ -146,19 +148,21 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
     }
 
     @Override
-    public void addItemStorages(List<IStorage<ItemStack>> storages) {
+    public void addItemStorages(List<IStorage<ItemStack>> storagesInsert, List<IStorage<ItemStack>> storagesExtract) {
         for (IStorage<ItemStack> storage : this.itemStorages) {
             if (storage != null) {
-                storages.add(storage);
+                storagesInsert.add(storage);
+                storagesExtract.add(storage);
             }
         }
     }
 
     @Override
-    public void addFluidStorages(List<IStorage<FluidStack>> storages) {
+    public void addFluidStorages(List<IStorage<FluidStack>> storagesInsert, List<IStorage<FluidStack>> storagesExtract) {
         for (IStorage<FluidStack> storage : this.fluidStorages) {
             if (storage != null) {
-                storages.add(storage);
+                storagesInsert.add(storage);
+                storagesExtract.add(storage);
             }
         }
     }
@@ -201,7 +205,8 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
         StackUtils.writeItems(itemFilters, 1, tag);
         StackUtils.writeItems(fluidFilters, 2, tag);
 
-        tag.setInteger(NBT_PRIORITY, priority);
+        tag.setInteger(NBT_INSERT_PRIORITY, insertPriority);
+        tag.setInteger(NBT_EXTRACT_PRIORITY, extractPriority);
         tag.setInteger(NBT_COMPARE, compare);
         tag.setInteger(NBT_MODE, mode);
         tag.setInteger(NBT_TYPE, type);
@@ -219,8 +224,12 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
         StackUtils.readItems(itemFilters, 1, tag);
         StackUtils.readItems(fluidFilters, 2, tag);
 
-        if (tag.hasKey(NBT_PRIORITY)) {
-            priority = tag.getInteger(NBT_PRIORITY);
+        if (tag.hasKey(NBT_INSERT_PRIORITY)) {
+            insertPriority = tag.getInteger(NBT_INSERT_PRIORITY);
+        }
+
+        if (tag.hasKey(NBT_EXTRACT_PRIORITY)) {
+            extractPriority = tag.getInteger(NBT_EXTRACT_PRIORITY);
         }
 
         if (tag.hasKey(NBT_COMPARE)) {
@@ -292,8 +301,13 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
     }
 
     @Override
-    public TileDataParameter<Integer, ?> getPriorityParameter() {
-        return TileDiskDrive.PRIORITY;
+    public TileDataParameter<Integer, ?> getInsertPriorityParameter() {
+        return TileDiskDrive.PRIORITY_INSERT;
+    }
+
+    @Override
+    public TileDataParameter<Integer, ?> getExtractPriorityParameter() {
+        return TileDiskDrive.PRIORITY_EXTRACT;
     }
 
     @Override
@@ -339,14 +353,28 @@ public class NetworkNodeDiskDrive extends NetworkNode implements IGuiStorage, IS
     }
 
     @Override
-    public int getPriority() {
-        return priority;
+    public int getInsertPriority() {
+        return insertPriority;
     }
 
     @Override
-    public void setPriority(int priority) {
-        this.priority = priority;
+    public void setInsertPriority(int priority) {
+        this.insertPriority = priority;
+        recalc();
+    }
 
+    @Override
+    public int getExtractPriority() {
+        return extractPriority;
+    }
+
+    @Override
+    public void setExtractPriority(int priority) {
+        this.extractPriority = priority;
+        recalc();
+    }
+
+    private void recalc() {
         markDirty();
 
         if (network != null) {
